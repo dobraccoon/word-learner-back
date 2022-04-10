@@ -1,0 +1,49 @@
+version: "3.8"
+services:
+  word-learner-db:
+    image: postgres:10.5
+    restart: always
+    container_name: word-learner-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASS=postgres
+      - APP_DB_FLYWAY_USER=flywaywluser
+      - APP_DB_FLYWAY_USER_PASS=wlPWD!32
+      - APP_DB_NAME=wordlearnerdb
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d wordlearnerdb -U flywaywluser" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - word-learner-network
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/
+      - ./scripts:/home/
+      - ./volume-word-learner-db-data:/var/lib/postgresql/data
+  word-learner-spring-app:
+    container_name: word-learner-spring-app
+    build:
+      context: ../
+      dockerfile: docker-compose/Dockerfile
+    image: word-learner-back:latest
+    ports:
+      - 8080:8080
+    networks:
+      - word-learner-network
+    depends_on:
+      word-learner-db:
+        condition: service_healthy
+    volumes:
+      - ./volume-word-learner-spring-app:/var/lib/word-learner-spring-app
+volumes:
+  word-learner-spring-app:
+networks:
+  word-learner-network:
+    driver: bridge
