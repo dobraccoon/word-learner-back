@@ -13,11 +13,15 @@ public class WordInfoService {
         this.wordInfoRepository = wordInfoRepository;
     }
 
-    public long create(final WordInfoInput wordInfoInput) {
-        return wordInfoRepository.create(wordInfoInput);
+    public WordInfo create(final WordInfo wordInfo) {
+        return wordInfoRepository.save(wordInfo);
     }
 
-    public List<WordInfoDto> loadCurrentDateRepeatWords() {
-        return wordInfoRepository.loadCurrentDateRepeatWords();
+    public List<WordInfo> findAll() {
+        return wordInfoRepository.findAll();
+    }
+
+    public List<WordInfo> findByCurrentDate() {
+        return wordInfoRepository.findByCurrentDate();
     }
 }

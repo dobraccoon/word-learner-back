@@ -1,33 +1,16 @@
 package com.dobraccoonsoft.wordlearnerback.words;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 
-import javax.sql.DataSource;
 import java.util.List;
 
-@Repository
-public class WordInfoRepository {
-    private static final String sqlLoadCurrentDateRepeatWords = "SELECT * FROM word_info;";
-    private static final String sqlInsertWithReturning =
-            "INSERT INTO word_info(WORD, WORD_TRANSLATE) VALUES (?, ?) RETURNING id";
+public interface WordInfoRepository extends CrudRepository<WordInfo, Long> {
 
-    private final JdbcTemplate jdbcTemplate;
+    @Override
+    List<WordInfo> findAll();
 
-    public WordInfoRepository(final DataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-    }
-
-    List<WordInfoDto> loadCurrentDateRepeatWords() {
-        return jdbcTemplate.query(sqlLoadCurrentDateRepeatWords, new WordInfoRowMapper());
-    }
-
-    public long create(final WordInfoInput wordInfoInput) {
-        return jdbcTemplate.update(
-                sqlInsertWithReturning,
-                        wordInfoInput.getWord(),
-                wordInfoInput.getWordTranslate()
-        );
-    }
+    //TODO: Fix current date problem
+    @Query(value = "SELECT * FROM word_info WHERE create_dt > CURRENT_DATE", nativeQuery = true)
+    List<WordInfo> findByCurrentDate();
 }

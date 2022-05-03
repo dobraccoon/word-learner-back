@@ -14,13 +14,19 @@ public class WordInfoController {
         this.wordInfoService = wordInfoService;
     }
 
-    @GetMapping("/current-to-learn")
-    public List<WordInfoDto> loadCurrentDateRepeatWords() {
-        return wordInfoService.loadCurrentDateRepeatWords();
+    @GetMapping
+    public List<WordInfo> findAllWords() {
+        return wordInfoService.findAll();
+    }
+
+    @GetMapping("/get-by-current-date")
+    public List<WordInfo> findByCurrentDate() {
+        return wordInfoService.findByCurrentDate();
     }
 
     @PostMapping
-    public long create(@RequestBody final WordInfoInput wordInfoInput) {
-        return wordInfoService.create(wordInfoInput);
+    public WordInfo create(@RequestBody final WordInfo wordInfo) {
+        return wordInfoService.create(wordInfo);
     }
+
 }
